@@ -1179,6 +1179,9 @@ button {
   .generationBanner {
     border-radius: 34px;
     padding: 28px 18px;
+    display: grid;
+    justify-items: center;
+    text-align: center;
   }
 
   .loadingBanner {
@@ -1204,6 +1207,11 @@ button {
   .bannerActions button {
     width: 48px;
     padding: 0;
+    justify-content: center;
+  }
+
+  .bannerActions {
+    width: 100%;
     justify-content: center;
   }
 

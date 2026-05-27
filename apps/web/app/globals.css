@@ -267,7 +267,7 @@ button {
   place-content: center;
   justify-items: center;
   text-align: center;
-  padding: 40px;
+  padding: 28px 40px 70px;
 }
 
 .emptyState h1 {
@@ -276,15 +276,15 @@ button {
 }
 
 .emptyState p {
-  max-width: 470px;
+  max-width: 450px;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.45;
 }
 
 .emptyIllustration {
   position: relative;
-  width: 280px;
+  width: 320px;
   height: 250px;
   display: grid;
   place-items: center;
@@ -294,25 +294,150 @@ button {
 
 .paperShape {
   position: absolute;
-  width: 112px;
-  height: 170px;
+  width: 104px;
+  height: 150px;
   border-radius: 14px;
   background: white;
   box-shadow: 0 12px 22px rgba(0, 0, 0, 0.08);
+}
+
+.paperShape::before,
+.paperShape::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  width: 48px;
+  height: 8px;
+  border-radius: 999px;
+  background: #0f2634;
+}
+
+.paperShape::before {
+  top: 38px;
+}
+
+.paperShape::after {
+  top: 64px;
+  background: #d7d7d7;
+  box-shadow: 0 24px 0 #d7d7d7;
 }
 
 .emptyIllustration svg {
   color: #d5c1e1;
   stroke-width: 7;
   z-index: 1;
+  transform: translate(42px, 18px) rotate(-2deg);
 }
 
-.emptyIllustration span {
+.emptyIllustration b {
   z-index: 2;
   color: #ff0050;
-  font-size: 74px;
+  font-size: 70px;
   font-weight: 900;
   line-height: 1;
+  transform: translate(42px, 30px);
+}
+
+.sparkLine {
+  position: absolute;
+  left: 42px;
+  top: 72px;
+  width: 70px;
+  height: 34px;
+  border-top: 3px solid #0f2634;
+  border-radius: 50%;
+  transform: rotate(-18deg);
+}
+
+.miniChip {
+  position: absolute;
+  right: 34px;
+  top: 62px;
+  width: 56px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+}
+
+.miniChip::before,
+.miniChip::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.miniChip::before {
+  left: 10px;
+  width: 10px;
+  background: #d9b9dc;
+}
+
+.miniChip::after {
+  left: 27px;
+  width: 18px;
+  background: #dcdcdc;
+}
+
+.blueDot,
+.starOne,
+.starTwo {
+  position: absolute;
+  z-index: 2;
+}
+
+.blueDot {
+  right: 72px;
+  bottom: 96px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0789ad;
+}
+
+.starOne,
+.starTwo {
+  width: 18px;
+  height: 18px;
+  transform: rotate(45deg);
+}
+
+.starOne {
+  left: 88px;
+  bottom: 64px;
+}
+
+.starTwo {
+  left: 122px;
+  bottom: 42px;
+  transform: rotate(45deg) scale(0.72);
+}
+
+.starOne::before,
+.starOne::after,
+.starTwo::before,
+.starTwo::after {
+  content: "";
+  position: absolute;
+  background: #0789ad;
+}
+
+.starOne::before,
+.starTwo::before {
+  left: 7px;
+  top: 0;
+  width: 4px;
+  height: 18px;
+}
+
+.starOne::after,
+.starTwo::after {
+  left: 0;
+  top: 7px;
+  width: 18px;
+  height: 4px;
 }
 
 .filterBar {
@@ -925,41 +1050,14 @@ button {
   }
 
   .workspace {
-    padding: 14px 10px 104px;
+    padding: 10px 10px 104px;
   }
 
   .topbar {
     height: 58px;
     border-radius: 8px;
     padding: 0 12px;
-    margin-top: 116px;
-  }
-
-  .topbar::before {
-    content: "9:41";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 46px;
-    padding: 14px 32px;
-    background: #33383b;
-    color: white;
-  }
-
-  .topbar::after {
-    content: "web-to-figma.design";
-    position: fixed;
-    top: 60px;
-    left: 12px;
-    right: 12px;
-    height: 44px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    background: #687079;
-    color: white;
-    font-weight: 500;
+    margin-top: 0;
   }
 
   .topbar > span,

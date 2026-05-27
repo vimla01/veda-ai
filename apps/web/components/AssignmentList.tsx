@@ -68,13 +68,18 @@ export function AssignmentList({ assignments, isLoading, onCreate, onOpen, onDel
     window.location.href = api.paperPdfUrl(assignment.id);
   }
 
-  if (!isLoading && assignments.length === 0) {
+  if (assignments.length === 0 && !normalizedQuery) {
     return (
       <section className="emptyState">
         <div className="emptyIllustration">
+          <span className="sparkLine" />
+          <span className="miniChip" />
+          <span className="blueDot" />
+          <span className="starOne" />
+          <span className="starTwo" />
           <div className="paperShape" />
           <Search size={92} />
-          <span>x</span>
+          <b>x</b>
         </div>
         <h1>No assignments yet</h1>
         <p>Create your first assignment to start collecting and grading student submissions.</p>

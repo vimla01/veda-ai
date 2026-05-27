@@ -9,6 +9,8 @@ type Props = {
   isLoading: boolean;
 };
 
+type RequiredField = "title" | "dueDate" | "subject" | "className" | "sourceText";
+
 export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -19,6 +21,7 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
   const [questionConfigs, setQuestionConfigs] = useState<QuestionConfig[]>(defaultQuestionConfigs);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [error, setError] = useState("");
+  const [touchedFields, setTouchedFields] = useState<RequiredField[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitLock = useRef(false);
 
@@ -31,12 +34,25 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
     setQuestionConfigs((configs) => configs.map((config) => (config.id === id ? { ...config, ...patch } : config)));
   }
 
+  function hasError(field: RequiredField) {
+    if (!touchedFields.includes(field)) return false;
+    const values = { title, dueDate, subject, className, sourceText };
+    return !values[field].trim();
+  }
+
+  function markTouched(field: RequiredField) {
+    setTouchedFields((fields) => (fields.includes(field) ? fields : [...fields, field]));
+  }
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (submitLock.current || isLoading) return;
 
-    if (!title.trim() || !subject.trim() || !className.trim() || !dueDate) {
-      setError("Please complete title, subject, class and due date.");
+    const requiredFields: RequiredField[] = ["title", "dueDate", "subject", "className", "sourceText"];
+    setTouchedFields(requiredFields);
+
+    if (!title.trim() || !subject.trim() || !className.trim() || !dueDate || !sourceText.trim()) {
+      setError("Please complete the required fields.");
       return;
     }
 
@@ -91,30 +107,61 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
         <p className="uploadHint">Upload images of your preferred document/image</p>
 
         <div className="twoColumn">
-          <label>
-            Assignment Title
-            <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Enter assignment title" />
+          <label className={hasError("title") ? "fieldInvalid" : undefined}>
+            <span className="labelText">Assignment Title <i>*</i></span>
+            <input
+              value={title}
+              onBlur={() => markTouched("title")}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Enter assignment title"
+            />
+            {hasError("title") && <small>Assignment title is required</small>}
           </label>
-          <label>
-            Due Date
+          <label className={hasError("dueDate") ? "fieldInvalid" : undefined}>
+            <span className="labelText">Due Date <i>*</i></span>
             <span className="inputIcon">
-              <input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} />
+              <input
+                type="date"
+                value={dueDate}
+                onBlur={() => markTouched("dueDate")}
+                onChange={(event) => setDueDate(event.target.value)}
+              />
               <CalendarDays size={18} />
             </span>
+            {hasError("dueDate") && <small>Due date is required</small>}
           </label>
-          <label>
-            Subject
-            <input value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="Subject" />
+          <label className={hasError("subject") ? "fieldInvalid" : undefined}>
+            <span className="labelText">Subject <i>*</i></span>
+            <input
+              value={subject}
+              onBlur={() => markTouched("subject")}
+              onChange={(event) => setSubject(event.target.value)}
+              placeholder="Subject"
+            />
+            {hasError("subject") && <small>Subject is required</small>}
           </label>
-          <label>
-            Class
-            <input value={className} onChange={(event) => setClassName(event.target.value)} placeholder="Class or grade" />
+          <label className={hasError("className") ? "fieldInvalid" : undefined}>
+            <span className="labelText">Class <i>*</i></span>
+            <input
+              value={className}
+              onBlur={() => markTouched("className")}
+              onChange={(event) => setClassName(event.target.value)}
+              placeholder="Class or grade"
+            />
+            {hasError("className") && <small>Class is required</small>}
           </label>
         </div>
 
-        <label>
-          Source Material
-          <textarea value={sourceText} onChange={(event) => setSourceText(event.target.value)} rows={3} placeholder="Paste chapter names, topic notes, or learning objectives" />
+        <label className={hasError("sourceText") ? "fieldInvalid" : undefined}>
+          <span className="labelText">Source Material <i>*</i></span>
+          <textarea
+            value={sourceText}
+            onBlur={() => markTouched("sourceText")}
+            onChange={(event) => setSourceText(event.target.value)}
+            rows={3}
+            placeholder="Paste chapter names, topic notes, or learning objectives"
+          />
+          {hasError("sourceText") && <small>Source material is required</small>}
         </label>
 
         <div className="questionRows">

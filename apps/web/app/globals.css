@@ -700,6 +700,17 @@ button {
   font-weight: 800;
 }
 
+.labelText {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.labelText i {
+  color: #ff0048;
+  font-style: normal;
+}
+
 .createPanel input,
 .createPanel textarea,
 .selectLike {
@@ -715,6 +726,19 @@ button {
   border-radius: 8px;
   padding: 14px 18px;
   resize: vertical;
+}
+
+.createPanel label small {
+  color: #ff0048;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.createPanel .fieldInvalid input,
+.createPanel .fieldInvalid textarea,
+.createPanel .fieldInvalid .inputIcon {
+  border-color: #ff0048;
+  box-shadow: 0 0 0 3px rgba(255, 0, 72, 0.1);
 }
 
 .inputIcon {
@@ -1179,9 +1203,6 @@ button {
   .generationBanner {
     border-radius: 34px;
     padding: 28px 18px;
-    display: grid;
-    justify-items: center;
-    text-align: center;
   }
 
   .loadingBanner {
@@ -1208,11 +1229,7 @@ button {
     width: 48px;
     padding: 0;
     justify-content: center;
-  }
-
-  .bannerActions {
-    width: 100%;
-    justify-content: center;
+    gap: 0;
   }
 
   .bannerActions button:not(:first-child) {

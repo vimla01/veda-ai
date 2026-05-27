@@ -31,6 +31,7 @@ export class GenerationQueue {
   ) {}
 
   start() {
+    // local demo mode still works without redis; the queue just runs inline.
     if (!env.redisUrl) return;
 
     const connection = new Redis(env.redisUrl, { maxRetriesPerRequest: null });
@@ -55,10 +56,12 @@ export class GenerationQueue {
       return;
     }
 
+    // no redis in local setup, so keep the same api flow and process in memory.
     void this.process(assignmentId);
   }
 
   async enqueuePdf(assignmentId: string): Promise<Buffer> {
+    // pdf export should still work even if the bullmq pdf worker is not running.
     if (!this.pdfQueue) return Buffer.from(await this.renderPdf(assignmentId), "base64");
 
     const job = await this.pdfQueue.add("render-pdf", { assignmentId }, { attempts: 2, removeOnComplete: true });
@@ -79,6 +82,7 @@ export class GenerationQueue {
 
       const paper = await this.generator.generate(assignment);
       await this.repository.savePaper(paper);
+      // clear stale list/detail cache after the paper is saved.
       await this.cache.del("assignments:list", `assignments:${assignmentId}:paper`);
       this.emit({
         assignmentId,

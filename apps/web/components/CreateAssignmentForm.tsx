@@ -66,6 +66,7 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
         </div>
 
         <label className="dropZone">
+          {/* show the file name so the upload control does not feel fake. */}
           <UploadCloud size={34} />
           <b>{selectedFileName || "Choose a file or drag & drop it here"}</b>
           <span>{selectedFileName ? "File selected" : "PDF, JPEG, PNG, up to 10MB"}</span>

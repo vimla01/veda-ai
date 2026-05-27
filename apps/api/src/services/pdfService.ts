@@ -6,6 +6,7 @@ export class PdfService {
     const doc = new PDFDocument({ size: "A4", margin: 54 });
     const chunks: Buffer[] = [];
 
+    // pdfkit streams output, so collect chunks before sending the download.
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));
     const done = new Promise<Buffer>((resolve) => {
       doc.on("end", () => resolve(Buffer.concat(chunks)));
@@ -50,4 +51,3 @@ export class PdfService {
     return done;
   }
 }
-

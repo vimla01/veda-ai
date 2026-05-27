@@ -39,6 +39,7 @@ export function AssignmentList({ assignments, isLoading, onCreate, onOpen, onDel
   useEffect(() => {
     if (!openMenuId) return;
 
+    // close menus the way users expect: outside click or escape.
     function closeMenu() {
       setOpenMenuId(undefined);
     }
@@ -60,6 +61,7 @@ export function AssignmentList({ assignments, isLoading, onCreate, onOpen, onDel
     try {
       await api.getPaper(assignment.id);
     } catch {
+      // if the paper is not ready, take the teacher to the progress screen.
       onOpen(assignment.id);
       return;
     }

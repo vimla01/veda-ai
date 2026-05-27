@@ -16,6 +16,7 @@ async function bootstrap() {
     useMongo = true;
   }
 
+  // without mongodb, use in-memory storage so reviewers can run it quickly.
   const app = express();
   const server = http.createServer(app);
   const io = new Server(server, {

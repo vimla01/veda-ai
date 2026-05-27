@@ -41,6 +41,7 @@ export class PaperGenerator {
 
   async generate(assignment: Assignment): Promise<GeneratedPaper> {
     if (this.openai) {
+      // prefer the real model when configured, but never block the demo flow on it.
       const aiPaper = await this.generateWithOpenAI(assignment);
       if (aiPaper) return aiPaper;
     }
@@ -89,6 +90,7 @@ export class PaperGenerator {
       const raw = response.choices[0]?.message.content;
       if (!raw) return null;
 
+      // validate the model output before it reaches the frontend.
       const parsed = generatedPaperSchema.parse(JSON.parse(raw));
       return {
         id: randomUUID(),
@@ -115,12 +117,13 @@ export class PaperGenerator {
         createdAt: new Date().toISOString()
       };
     } catch (error) {
-      console.warn("OpenAI generation failed, using fallback generator.", error);
+      console.warn("openai generation failed, using fallback generator.", error);
       return null;
     }
   }
 
   private generateFallback(assignment: Assignment): GeneratedPaper {
+    // fallback keeps reviews and demos usable without an api key.
     const topics = extractTopics(assignment.sourceText || assignment.title);
 
     const sections = assignment.questionConfigs.map((config, sectionIndex) => ({
@@ -157,6 +160,7 @@ export class PaperGenerator {
 }
 
 function extractTopics(source: string) {
+  // teachers often paste chapter lists; clean them into usable topic names.
   const cleaned = source
     .replace(/chapter\s*\d+\s*[:.-]?/gi, "")
     .replace(/\bunit\s*\d+\s*[:.-]?/gi, "")

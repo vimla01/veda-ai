@@ -41,6 +41,7 @@ const AssignmentSchema = new Schema<AssignmentRecord>(
 const AssignmentModel =
   mongoose.models.Assignment ?? mongoose.model<AssignmentRecord>("Assignment", AssignmentSchema);
 
+// figma has a teacher/school shell, so keep one demo profile instead of login.
 const demoTeacher = {
   id: "teacher-demo",
   name: "John Doe",
@@ -52,6 +53,7 @@ export class AssignmentRepository {
   constructor(private readonly useMongo: boolean) {}
 
   async create(input: AssignmentInput): Promise<Assignment> {
+    // the product starts from dashboard, so new assignments attach to the demo teacher.
     const assignment: Assignment = {
       ...input,
       id: randomUUID(),

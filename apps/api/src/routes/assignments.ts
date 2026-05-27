@@ -9,6 +9,7 @@ export function assignmentRoutes(repository: AssignmentRepository, queue: Genera
   const cache = new CacheService();
 
   router.get("/", async (_req, res) => {
+    // the list changes often, so keep this cache short.
     const cached = await cache.get("assignments:list");
     if (cached) return res.json(cached);
 
@@ -25,6 +26,7 @@ export function assignmentRoutes(repository: AssignmentRepository, queue: Genera
 
   router.get("/:id/paper", async (req, res) => {
     const cacheKey = `assignments:${req.params.id}:paper`;
+    // generated papers are heavier than assignments, so cache the shaped result.
     const cached = await cache.get(cacheKey);
     if (cached) return res.json(cached);
 

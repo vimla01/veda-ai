@@ -27,7 +27,7 @@ export class CacheService {
       if (this.redis.status === "wait") await this.redis.connect();
       await this.redis.set(key, JSON.stringify(value), "EX", ttlSeconds);
     } catch {
-      // Cache misses must never break the core assignment flow.
+      // cache issues should never break the core assignment flow.
     }
   }
 
@@ -37,8 +37,7 @@ export class CacheService {
       if (this.redis.status === "wait") await this.redis.connect();
       await this.redis.del(...keys);
     } catch {
-      // Best-effort cache invalidation.
+      // best-effort cache invalidation.
     }
   }
 }
-

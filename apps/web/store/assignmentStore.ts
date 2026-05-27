@@ -63,6 +63,7 @@ export const useAssignmentStore = create<AssignmentState>((set, get) => ({
         socket = io(API_URL);
         set({ socket });
       }
+      // join only the active assignment room so progress updates stay scoped.
       socket.emit("assignment:join", assignment.id);
       socket.on("generation:progress", async (progress: GenerationProgress) => {
         set({ progress });

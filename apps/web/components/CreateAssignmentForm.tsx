@@ -2,7 +2,7 @@
 
 import { defaultQuestionConfigs, type AssignmentInput, type QuestionConfig } from "@veda/shared";
 import { CalendarDays, ChevronDown, Minus, Plus, UploadCloud } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 
 type Props = {
   onSubmit: (input: AssignmentInput) => Promise<void>;
@@ -19,6 +19,8 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
   const [questionConfigs, setQuestionConfigs] = useState<QuestionConfig[]>(defaultQuestionConfigs);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitLock = useRef(false);
 
   const totalMarks = useMemo(
     () => questionConfigs.reduce((total, config) => total + config.count * config.marks, 0),
@@ -31,6 +33,8 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (submitLock.current || isLoading) return;
+
     if (!title.trim() || !subject.trim() || !className.trim() || !dueDate) {
       setError("Please complete title, subject, class and due date.");
       return;
@@ -42,7 +46,14 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
     }
 
     setError("");
-    await onSubmit({ title, subject, className, dueDate, sourceText, instructions, questionConfigs });
+    submitLock.current = true;
+    setIsSubmitting(true);
+    try {
+      await onSubmit({ title, subject, className, dueDate, sourceText, instructions, questionConfigs });
+    } finally {
+      submitLock.current = false;
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -132,8 +143,8 @@ export function CreateAssignmentForm({ onSubmit, isLoading }: Props) {
         <div className="formActions">
           <span>{totalMarks} marks total</span>
           {error && <strong>{error}</strong>}
-          <button className="blackButton" disabled={isLoading}>
-            Generate Assignment
+          <button className="blackButton" disabled={isLoading || isSubmitting}>
+            {isLoading || isSubmitting ? "Generating..." : "Generate Assignment"}
           </button>
         </div>
       </form>

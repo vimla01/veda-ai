@@ -1,0 +1,42 @@
+services:
+  - type: keyvalue
+    name: veda-ai-redis
+    plan: free
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+  - type: web
+    name: veda-ai-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build --workspace @veda/shared && npm run build --workspace @veda/api
+    startCommand: npm run start --workspace @veda/api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: CLIENT_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: veda-ai-redis
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+
+  - type: web
+    name: veda-ai-web
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build --workspace @veda/shared && npm run build --workspace @veda/web
+    startCommand: npm run start --workspace @veda/web -- -p $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

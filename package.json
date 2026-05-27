@@ -2,13 +2,13 @@
   "name": "veda-ai",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @veda/web",
-    "dev:web": "npm run dev --workspace @veda/web",
-    "dev:api": "npm run dev --workspace @veda/api",
+    "dev": "npm run build --workspace @veda/shared && npm run dev --workspace @veda/web",
+    "dev:web": "npm run build --workspace @veda/shared && npm run dev --workspace @veda/web",
+    "dev:api": "npm run build --workspace @veda/shared && npm run dev --workspace @veda/api",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
@@ -17,4 +17,3 @@
     "typescript": "^5.5.4"
   }
 }
-

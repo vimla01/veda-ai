@@ -61,11 +61,20 @@ export class GenerationQueue {
   }
 
   async enqueuePdf(assignmentId: string): Promise<Buffer> {
+    const cacheKey = `assignments:${assignmentId}:pdf`;
+    const cachedPdf = await this.cache.get<string>(cacheKey);
+    if (cachedPdf) return Buffer.from(cachedPdf, "base64");
+
     // pdf export should still work even if the bullmq pdf worker is not running.
-    if (!this.pdfQueue) return Buffer.from(await this.renderPdf(assignmentId), "base64");
+    if (!this.pdfQueue) {
+      const rendered = await this.renderPdf(assignmentId);
+      await this.cache.set(cacheKey, rendered, 300);
+      return Buffer.from(rendered, "base64");
+    }
 
     const job = await this.pdfQueue.add("render-pdf", { assignmentId }, { attempts: 2, removeOnComplete: true });
     const result = await job.waitUntilFinished(this.pdfEvents!, 15000);
+    await this.cache.set(cacheKey, result, 300);
     return Buffer.from(result as string, "base64");
   }
 
@@ -74,7 +83,7 @@ export class GenerationQueue {
       await this.repository.updateStatus(assignmentId, "generating");
       for (const [index, message] of steps.entries()) {
         this.emit({ assignmentId, status: "generating", percent: (index + 1) * 20, message });
-        await new Promise((resolve) => setTimeout(resolve, 450));
+        await new Promise((resolve) => setTimeout(resolve, 120));
       }
 
       const assignment = await this.repository.find(assignmentId);
@@ -83,7 +92,7 @@ export class GenerationQueue {
       const paper = await this.generator.generate(assignment);
       await this.repository.savePaper(paper);
       // clear stale list/detail cache after the paper is saved.
-      await this.cache.del("assignments:list", `assignments:${assignmentId}:paper`);
+      await this.cache.del("assignments:list", `assignments:${assignmentId}:paper`, `assignments:${assignmentId}:pdf`);
       this.emit({
         assignmentId,
         status: "completed",

@@ -58,13 +58,12 @@ export function AssignmentList({ assignments, isLoading, onCreate, onOpen, onDel
 
   async function downloadPaper(assignment: Assignment) {
     setOpenMenuId(undefined);
-    try {
-      await api.getPaper(assignment.id);
-    } catch {
+    if (assignment.status !== "completed" && !assignment.resultId) {
       // if the paper is not ready, take the teacher to the progress screen.
       onOpen(assignment.id);
       return;
     }
+
     window.location.href = api.paperPdfUrl(assignment.id);
   }
 

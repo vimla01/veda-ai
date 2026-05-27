@@ -65,6 +65,7 @@ export const useAssignmentStore = create<AssignmentState>((set, get) => ({
       }
       // join only the active assignment room so progress updates stay scoped.
       socket.emit("assignment:join", assignment.id);
+      socket.off("generation:progress");
       socket.on("generation:progress", async (progress: GenerationProgress) => {
         set({ progress });
         if (progress.status === "completed") {
@@ -96,18 +97,27 @@ export const useAssignmentStore = create<AssignmentState>((set, get) => ({
   },
 
   deleteAssignment: async (assignmentId) => {
-    set({ error: undefined });
+    const previous = get();
+    set((state) => ({
+      error: undefined,
+      assignments: state.assignments.filter((assignment) => assignment.id !== assignmentId),
+      paper: state.activeAssignmentId === assignmentId ? undefined : state.paper,
+      progress: state.activeAssignmentId === assignmentId ? undefined : state.progress,
+      activeAssignmentId: state.activeAssignmentId === assignmentId ? undefined : state.activeAssignmentId,
+      view: state.activeAssignmentId === assignmentId ? "list" : state.view
+    }));
+
     try {
       await api.deleteAssignment(assignmentId);
-      set((state) => ({
-        assignments: state.assignments.filter((assignment) => assignment.id !== assignmentId),
-        paper: state.activeAssignmentId === assignmentId ? undefined : state.paper,
-        progress: state.activeAssignmentId === assignmentId ? undefined : state.progress,
-        activeAssignmentId: state.activeAssignmentId === assignmentId ? undefined : state.activeAssignmentId,
-        view: state.activeAssignmentId === assignmentId ? "list" : state.view
-      }));
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Unable to delete assignment" });
+      set({
+        assignments: previous.assignments,
+        paper: previous.paper,
+        progress: previous.progress,
+        activeAssignmentId: previous.activeAssignmentId,
+        view: previous.view,
+        error: error instanceof Error ? error.message : "Unable to delete assignment"
+      });
     }
   }
 }));

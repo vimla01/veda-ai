@@ -14,7 +14,7 @@ export function assignmentRoutes(repository: AssignmentRepository, queue: Genera
     if (cached) return res.json(cached);
 
     const assignments = await repository.list();
-    await cache.set("assignments:list", assignments, 30);
+    await cache.set("assignments:list", assignments, 60);
     res.json(assignments);
   });
 
@@ -32,7 +32,7 @@ export function assignmentRoutes(repository: AssignmentRepository, queue: Genera
 
     const paper = await repository.findPaper(req.params.id);
     if (!paper) return res.status(404).json({ message: "Paper not found" });
-    await cache.set(cacheKey, paper, 120);
+    await cache.set(cacheKey, paper, 300);
     res.json(paper);
   });
 
@@ -63,7 +63,7 @@ export function assignmentRoutes(repository: AssignmentRepository, queue: Genera
   router.delete("/:id", async (req, res) => {
     const deleted = await repository.delete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Assignment not found" });
-    await cache.del("assignments:list", `assignments:${req.params.id}:paper`);
+    await cache.del("assignments:list", `assignments:${req.params.id}:paper`, `assignments:${req.params.id}:pdf`);
     res.status(204).send();
   });
 
